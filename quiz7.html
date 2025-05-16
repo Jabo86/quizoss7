@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulazione Concorso Operatore Socio Sanitario - Modulo 17</title>
+    <style>
+        /* Stesso stile CSS del Modulo 16, omesso per brevità */
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Simulazione Concorso Operatore Socio Sanitario - Modulo 17</h1>
+        <div class="question-nav" id="questionNav"></div>
+        <div id="timer">Tempo rimanente: <span id="time">30:00</span></div>
+        <div id="quiz"></div>
+        <div class="navigation">
+            <button class="nav-button" id="prev" disabled>⬅ Indietro</button>
+            <button class="nav-button" id="next">Avanti ➡</button>
+        </div>
+        <button id="submit">Invia Risposte</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Array di domande (481-510) simulate, uniche rispetto ai moduli precedenti e al Modulo 16
+        const questions = [
+            {
+                question: "In caso di emergenza per arresto cardiaco, l’OSS deve:",
+                options: [
+                    "iniziare la RCP senza formazione",
+                    "allertare immediatamente il personale medico",
+                    "ignorare la situazione"
+                ],
+                correct: "allertare immediatamente il personale medico",
+                explanation: "In caso di arresto cardiaco, l’OSS deve allertare il personale medico e, se formato, assistere nella RCP. L’OSS deve garantire un’azione rapida e segnalare l’emergenza senza ritardi."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di arresto cardiaco?",
+                options: [
+                    "assenza di polso e respiro",
+                    "respirazione regolare",
+                    "movimenti attivi"
+                ],
+                correct: "assenza di polso e respiro",
+                explanation: "Assenza di polso e respiro indica arresto cardiaco. L’OSS deve verificare i segni vitali, allertare il personale medico, e segnalare immediatamente l’emergenza."
+            },
+            {
+                question: "La gestione del paziente in fase terminale include:",
+                options: [
+                    "supporto emotivo e comfort",
+                    "fornire cibi solidi",
+                    "ignorare le richieste"
+                ],
+                correct: "supporto emotivo e comfort",
+                explanation: "La fase terminale richiede supporto emotivo e comfort fisico. L’OSS deve ascoltare il paziente, garantire un ambiente sereno, e segnalare all’infermiere bisogni specifici."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di disagio in fase terminale?",
+                options: [
+                    "agitazione e gemiti",
+                    "sonno tranquillo",
+                    "appetito regolare"
+                ],
+                correct: "agitazione e gemiti",
+                explanation: "Agitazione e gemiti indicano disagio in fase terminale. L’OSS deve monitorare il paziente, fornire comfort, e segnalare all’infermiere sintomi per una gestione palliativa."
+            },
+            {
+                question: "In caso di crisi convulsiva, l’OSS deve:",
+                options: [
+                    "proteggere il paziente da lesioni",
+                    "inserire oggetti in bocca",
+                    "immobilizzare il paziente"
+                ],
+                correct: "proteggere il paziente da lesioni",
+                explanation: "Durante una crisi convulsiva, l’OSS deve proteggere il paziente da lesioni (es. rimuovendo oggetti). Non si devono inserire oggetti in bocca. Segnalare all’infermiere la durata della crisi."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di crisi convulsiva?",
+                options: [
+                    "movimenti incontrollati e perdita di coscienza",
+                    "movimenti coordinati",
+                    "respirazione regolare"
+                ],
+                correct: "movimenti incontrollati e perdita di coscienza",
+                explanation: "Movimenti incontrollati e perdita di coscienza indicano una crisi convulsiva. L’OSS deve garantire la sicurezza, monitorare la crisi, e segnalare all’infermiere per una valutazione."
+            },
+            {
+                question: "La gestione del paziente con distress respiratorio include:",
+                options: [
+                    "posizione semi-seduta e rassicurazione",
+                    "posizione prona",
+                    "ignorare i sintomi"
+                ],
+                correct: "posizione semi-seduta e rassicurazione",
+                explanation: "Il distress respiratorio richiede una posizione semi-seduta per facilitare la respirazione. L’OSS deve rassicurare il paziente, monitorare i segni vitali, e segnalare all’infermiere."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di distress respiratorio?",
+                options: [
+                    "respiro rapido e cianosi",
+                    "respirazione regolare",
+                    "cute rosea"
+                ],
+                correct: "respiro rapido e cianosi",
+                explanation: "Respiro rapido e cianosi indicano distress respiratorio. L’OSS deve monitorare la saturazione, fornire ossigeno se prescritto, e segnalare all’infermiere immediatamente."
+            },
+            {
+                question: "La gestione del paziente con ansia acuta include:",
+                options: [
+                    "comunicazione calma e rassicurante",
+                    "stimoli ambientali intensi",
+                    "ignorare i sintomi"
+                ],
+                correct: "comunicazione calma e rassicurante",
+                explanation: "L’ansia acuta richiede comunicazione calma e un ambiente tranquillo. L’OSS deve ascoltare il paziente, ridurre gli stimoli, e segnalare all’infermiere sintomi persistenti."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di ansia acuta?",
+                options: [
+                    "tachicardia e irrequietezza",
+                    "calma e rilassamento",
+                    "respirazione regolare"
+                ],
+                correct: "tachicardia e irrequietezza",
+                explanation: "Tachicardia e irrequietezza indicano ansia acuta. L’OSS deve rassicurare il paziente, monitorare i parametri vitali, e segnalare all’infermiere per una valutazione."
+            },
+            {
+                question: "La gestione del paziente con crisi ipertensiva include:",
+                options: [
+                    "monitoraggio della pressione e allerta medica",
+                    "somministrazione di farmaci",
+                    "ignorare i sintomi"
+                ],
+                correct: "monitoraggio della pressione e allerta medica",
+                explanation: "La crisi ipertensiva richiede monitoraggio della pressione e allerta immediata del personale medico. L’OSS deve mantenere il paziente calmo e segnalare all’infermiere valori elevati."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di crisi ipertensiva?",
+                options: [
+                    "cefalea e confusione",
+                    "pressione normale",
+                    "assenza di sintomi"
+                ],
+                correct: "cefalea e confusione",
+                explanation: "Cefalea e confusione indicano crisi ipertensiva. L’OSS deve misurare la pressione, garantire un ambiente calmo, e segnalare all’infermiere immediatamente."
+            },
+            {
+                question: "La gestione del paziente con ipoglicemia include:",
+                options: [
+                    "offerta di zuccheri semplici",
+                    "somministrazione di insulina",
+                    "ignorare i sintomi"
+                ],
+                correct: "offerta di zuccheri semplici",
+                explanation: "L’ipoglicemia richiede offerta di zuccheri semplici (es. succo di frutta) se il paziente è cosciente. L’OSS deve monitorare i sintomi e segnalare all’infermiere per una gestione medica."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di ipoglicemia?",
+                options: [
+                    "sudorazione e tremori",
+                    "energia elevata",
+                    "appetito regolare"
+                ],
+                correct: "sudorazione e tremori",
+                explanation: "Sudorazione e tremori indicano ipoglicemia. L’OSS deve monitorare il paziente, offrire zuccheri se indicato, e segnalare all’infermiere per una valutazione."
+            },
+            {
+                question: "La gestione del paziente con edema polmonare include:",
+                options: [
+                    "posizione semi-seduta e allerta medica",
+                    "posizione prona",
+                    "ignorare i sintomi"
+                ],
+                correct: "posizione semi-seduta e allerta medica",
+                explanation: "L’edema polmonare richiede una posizione semi-seduta e allerta medica immediata. L’OSS deve monitorare la respirazione, fornire ossigeno se prescritto, e segnalare all’infermiere."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di edema polmonare?",
+                options: [
+                    "dispnea e rantoli",
+                    "respirazione regolare",
+                    "cute asciutta"
+                ],
+                correct: "dispnea e rantoli",
+                explanation: "Dispnea e rantoli indicano edema polmonare. L’OSS deve monitorare i parametri vitali, mantenere il paziente in posizione corretta, e segnalare all’infermiere immediatamente."
+            },
+            {
+                question: "La gestione del paziente con crisi asmatica include:",
+                options: [
+                    "somministrazione del broncodilatatore prescritto",
+                    "posizione supina",
+                    "ignorare i sintomi"
+                ],
+                correct: "somministrazione del broncodilatatore prescritto",
+                explanation: "La crisi asmatica richiede la somministrazione del broncodilatatore prescritto, se autorizzato. L’OSS deve monitorare la respirazione e segnalare all’infermiere sintomi persistenti."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di crisi asmatica?",
+                options: [
+                    "sibili e dispnea",
+                    "respirazione regolare",
+                    "cute rosea"
+                ],
+                correct: "sibili e dispnea",
+                explanation: "Sibili e dispnea indicano crisi asmatica. L’OSS deve assistere il paziente, monitorare la respirazione, e segnalare all’infermiere per una gestione immediata."
+            },
+            {
+                question: "La gestione del paziente con rischio di suicidio include:",
+                options: [
+                    "supervisione costante",
+                    "accesso a oggetti pericolosi",
+                    "isolamento sociale"
+                ],
+                correct: "supervisione costante",
+                explanation: "Il rischio di suicidio richiede supervisione costante. L’OSS deve garantire la sicurezza, comunicare con empatia, e segnalare all’infermiere comportamenti a rischio."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di rischio di suicidio?",
+                options: [
+                    "espressioni di disperazione",
+                    "umore stabile",
+                    "interazioni sociali attive"
+                ],
+                correct: "espressioni di disperazione",
+                explanation: "Espressioni di disperazione indicano rischio di suicidio. L’OSS deve monitorare il paziente, garantire sicurezza, e segnalare all’infermiere per un intervento psicologico."
+            },
+            {
+                question: "La gestione del paziente con delirium include:",
+                options: [
+                    "orientamento e ambiente calmo",
+                    "stimoli intensi",
+                    "isolamento"
+                ],
+                correct: "orientamento e ambiente calmo",
+                explanation: "Il delirium richiede orientamento (es. riferimenti temporali) e un ambiente calmo. L’OSS deve rassicurare il paziente, monitorare i sintomi, e segnalare all’infermiere."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di delirium?",
+                options: [
+                    "allucinazioni e disorientamento",
+                    "memoria intatta",
+                    "comunicazione fluida"
+                ],
+                correct: "allucinazioni e disorientamento",
+                explanation: "Allucinazioni e disorientamento indicano delirium. L’OSS deve mantenere un ambiente sicuro, monitorare il paziente, e segnalare all’infermiere per una valutazione."
+            },
+            {
+                question: "La gestione del paziente con shock anafilattico include:",
+                options: [
+                    "allerta medica immediata",
+                    "offerta di cibi allergenici",
+                    "ignorare i sintomi"
+                ],
+                correct: "allerta medica immediata",
+                explanation: "Lo shock anafilattico richiede allerta medica immediata. L’OSS deve monitorare i segni vitali, mantenere il paziente in posizione supina, e segnalare all’infermiere."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di shock anafilattico?",
+                options: [
+                    "edema e dispnea",
+                    "respirazione regolare",
+                    "cute asciutta"
+                ],
+                correct: "edema e dispnea",
+                explanation: "Edema e dispnea indicano shock anafilattico. L’OSS deve allertare il personale medico, monitorare il paziente, e segnalare immediatamente l’emergenza."
+            },
+            {
+                question: "La gestione del paziente con ustioni gravi include:",
+                options: [
+                    "copertura con garze sterili",
+                    "applicazione di ghiaccio",
+                    "rimozione della cute"
+                ],
+                correct: "copertura con garze sterili",
+                explanation: "Le ustioni gravi richiedono copertura con garze sterili per prevenire infezioni. L’OSS deve evitare ghiaccio o rimozione della cute e segnalare all’infermiere per una gestione medica."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di infezione da ustione?",
+                options: [
+                    "secrezioni purulente",
+                    "cute asciutta",
+                    "riduzione del dolore"
+                ],
+                correct: "secrezioni purulente",
+                explanation: "Secrezioni purulente indicano infezione da ustione. L’OSS deve monitorare la zona ustionata, usare DPI, e segnalare all’infermiere per una valutazione medica."
+            },
+            {
+                question: "La gestione del paziente con crisi iperglicemica include:",
+                options: [
+                    "allerta medica e monitoraggio",
+                    "offerta di zuccheri",
+                    "ignorare i sintomi"
+                ],
+                correct: "allerta medica e monitoraggio",
+                explanation: "La crisi iperglicemica richiede allerta medica e monitoraggio dei segni vitali. L’OSS deve evitare zuccheri, mantenere il paziente calmo, e segnalare all’infermiere."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di iperglicemia?",
+                options: [
+                    "sete intensa e poliuria",
+                    "energia elevata",
+                    "respirazione regolare"
+                ],
+                correct: "sete intensa e poliuria",
+                explanation: "Sete intensa e poliuria indicano iperglicemia. L’OSS deve monitorare il paziente, annotare i sintomi, e segnalare all’infermiere per una gestione medica."
+            },
+            {
+                question: "La gestione del paziente con supporto psicologico include:",
+                options: [
+                    "ascolto attivo e empatia",
+                    "giudizi sulle emozioni",
+                    "isolamento sociale"
+                ],
+                correct: "ascolto attivo e empatia",
+                explanation: "Il supporto psicologico richiede ascolto attivo e empatia. L’OSS deve comunicare con rispetto, osservare l’umore, e segnalare all’infermiere segni di distress emotivo."
+            },
+            {
+                question: "Quale tra i seguenti è un segno di distress emotivo?",
+                options: [
+                    "pianto e ritiro sociale",
+                    "umore stabile",
+                    "interazioni fluide"
+                ],
+                correct: "pianto e ritiro sociale",
+                explanation: "Pianto e ritiro sociale indicano distress emotivo. L’OSS deve ascoltare il paziente, promuovere il comfort, e segnalare all’infermiere per un supporto psicologico."
+            }
+        ];
+
+        let currentQuestion = 0;
+
+        // Carica i quadratini di navigazione
+        function loadQuestionNav() {
+            const navDiv = document.getElementById("questionNav");
+            questions.forEach((_, index) => {
+                const box = document.createElement("div");
+                box.classList.add("question-box");
+                box.textContent = index + 1;
+                box.addEventListener("click", () => {
+                    showQuestion(index);
+                });
+                navDiv.appendChild(box);
+            });
+        }
+
+        // Carica il quiz
+        function loadQuiz() {
+            const quizDiv = document.getElementById("quiz");
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.id = `question-${index}`;
+                questionDiv.innerHTML = `
+                    <h3>${index + 481}. ${q.question}</h3>
+                    ${q.options.map((opt, i) => `
+                        <div class="option" data-value="${opt}">
+                            <input type="radio" name="q${index}" value="${opt}" id="q${index}_${i}">
+                            <label for="q${index}_${i}">${opt}</label>
+                            <span class="lamp" id="lamp-${index}-${i}">💡</span>
+                        </div>
+                    `).join("")}
+                    <div class="explanation" id="exp-${index}">${q.explanation}</div>
+                `;
+                quizDiv.appendChild(questionDiv);
+
+                const radios = questionDiv.querySelectorAll(`input[name="q${index}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener("change", () => {
+                        document.querySelectorAll(".question-box")[index].classList.add("answered");
+                    });
+                });
+            });
+            showQuestion(0);
+        }
+
+        // Mostra la domanda corrente
+        function showQuestion(index) {
+            document.querySelectorAll(".question").forEach(q => q.classList.remove("active"));
+            document.getElementById(`question-${index}`).classList.add("active");
+            currentQuestion = index;
+            document.getElementById("prev").disabled = currentQuestion === 0;
+            document.getElementById("next").disabled = currentQuestion === questions.length - 1;
+        }
+
+        // Timer (30 minuti)
+        let timeLeft = 30 * 60;
+        function startTimer() {
+            const timer = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById("time").textContent = 
+                    `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    checkAnswers();
+                }
+            }, 1000);
+        }
+
+        // Controllo risposte e feedback visivo
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((q, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                const options = document.querySelectorAll(`#question-${index} .option`);
+                options.forEach(option => {
+                    const value = option.getAttribute("data-value");
+                    if (value === q.correct) {
+                        option.classList.add("correct");
+                        const lamp = option.querySelector(".lamp");
+                        lamp.style.display = "inline";
+                        lamp.addEventListener("click", () => {
+                            const explanation = document.getElementById(`exp-${index}`);
+                            explanation.style.display = "block";
+                        });
+                    }
+                });
+                if (selected) {
+                    if (selected.value === q.correct) {
+                        score++;
+                    } else {
+                        selected.parentElement.classList.add("wrong");
+                    }
+                }
+            });
+            const resultDiv = document.getElementById("result");
+            resultDiv.textContent = `Punteggio: ${score} / ${questions.length}`;
+            document.getElementById("submit").disabled = true;
+            document.getElementById("prev").disabled = true;
+            document.getElementById("next").disabled = true;
+            document.querySelectorAll("input[type=radio]").forEach(radio => {
+                radio.disabled = true;
+            });
+        }
+
+        // Inizializzazione
+        window.onload = () => {
+            loadQuestionNav();
+            loadQuiz();
+            startTimer();
+            document.getElementById("prev").addEventListener("click", () => {
+                if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+            });
+            document.getElementById("next").addEventListener("click", () => {
+                if (currentQuestion < questions.length - 1) showQuestion(currentQuestion + 1);
+            });
+            document.getElementById("submit").addEventListener("click", () => {
+                if (confirm("Sei sicuro di voler inviare le risposte?")) {
+                    checkAnswers();
+                }
+            });
+        };
+    </script>
+</body>
+</html>
